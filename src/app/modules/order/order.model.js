@@ -66,6 +66,12 @@ const orderSchema = new Schema(
       type: deliveryAddress,
       required: true,
     },
+    paymentDetails: {
+      type: {
+        type: mongoose.Types.ObjectId,
+        ref: "Payment",
+      },
+    },
   },
   {
     timestamps: true,
