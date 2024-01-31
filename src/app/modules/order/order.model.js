@@ -1,40 +1,45 @@
 const mongoose = require("mongoose")
 const { Schema } = mongoose
 
-const orderProductSchema = new Schema({
-  productId: {
-    type: mongoose.Types.ObjectId,
-    required: true,
-    ref: "Product",
+const orderProductSchema = new Schema(
+  {
+    productId: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "Product",
+    },
+    quantity: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    total: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    couponId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Coupon",
+    },
+    discountId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Discount",
+    },
+    taxId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Tax",
+    },
   },
-  quantity: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
-  price: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
-  total: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
-  couponId: {
-    type: mongoose.Types.ObjectId,
-    ref: "Coupon",
-  },
-  discountId: {
-    type: mongoose.Types.ObjectId,
-    ref: "Discount",
-  },
-  taxId: {
-    type: mongoose.Types.ObjectId,
-    ref: "Tax",
-  },
-})
+  {
+    timestamps: true,
+  }
+)
 const deliveryAddress = new Schema(
   {
     id: { type: String, required: true },
@@ -51,11 +56,14 @@ const deliveryAddress = new Schema(
 )
 const orderSchema = new Schema(
   {
-    id: String,
+    id: {
+      type: String,
+      unique: true,
+      required: true,
+    },
     productList: {
       type: [orderProductSchema],
       required: true,
-      default: [],
     },
     buyerId: {
       type: mongoose.Types.ObjectId,
@@ -65,12 +73,6 @@ const orderSchema = new Schema(
     deliveryAddress: {
       type: deliveryAddress,
       required: true,
-    },
-    paymentDetails: {
-      type: {
-        type: mongoose.Types.ObjectId,
-        ref: "Payment",
-      },
     },
   },
   {

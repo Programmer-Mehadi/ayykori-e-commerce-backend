@@ -10,12 +10,10 @@ const productSchema = new Schema(
     title: {
       type: String,
       required: true,
-      unique: true,
     },
     image: {
       type: String,
       required: true,
-      unique: true,
     },
     image_list: {
       type: [String],
@@ -38,10 +36,12 @@ const productSchema = new Schema(
     discountId: {
       type: mongoose.Types.ObjectId,
       ref: "Discount",
+      default: null,
     },
     couponId: {
       type: mongoose.Types.ObjectId,
       ref: "Coupon",
+      default: null,
     },
     discountPercentage: {
       type: Number,
@@ -60,6 +60,27 @@ const productSchema = new Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    categoryId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Category",
+      required: true,
+      default: null,
+    },
+    brandId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Brand",
+      required: true,
+    },
+    subCategoryId: {
+      type: mongoose.Types.ObjectId,
+      ref: "SubCategory",
+      required: true,
+      default: null,
     },
   },
   {

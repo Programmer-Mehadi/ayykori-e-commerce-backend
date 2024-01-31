@@ -63,10 +63,10 @@ const individualLimiter = rateLimit({
 })
 
 // Apply the rate limiter to specific routes or all routes
-conn.use("/", globalLimiter)
+// conn.use("/", globalLimiter)
 
 // Apply the rate limiter to specific routes
-conn.use("/api/v1", individualLimiter)
+// conn.use("/api/v1", individualLimiter)
 
 // set the routes
 conn.use("/api/v1", routes)
@@ -79,4 +79,20 @@ conn.get("/", (req, res) => {
   return res.json({ success: true, message: "Server is up and running" })
 })
 
+conn.use("*", (req, res) => {
+  res.status(404).send({
+    success: false,
+    message: `🙄 Api ${req.originalUrl} not found 🚫`,
+  })
+})
+
+conn.use((error, req, res) => {
+  return res.status(500).json({
+    success: false,
+    error: {
+      message: error?.message,
+    },
+    stack: error?.stack,
+  })
+})
 module.exports = conn

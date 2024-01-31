@@ -1,3 +1,4 @@
+const configEnv = require("../../config/configEnv")
 const ApiError = require("../../errors/ApiError")
 const handleCastError = require("../../errors/handleCastError")
 const handleValidationError = require("../../errors/handleValidationError")
@@ -14,10 +15,9 @@ const globalErrorHandler = (error, req, res, next) => {
   }
   // check mongoose error
   else if (error.code && error.code === 11000) {
-    const simplifiedError = handleValidationError(error)
-    statusCode = simplifiedError.statusCode
-    message = simplifiedError.message
-    errorMessages = simplifiedError.errorMessages
+    statusCode = 400
+    message = "Duplicate key error"
+    errorMessages = error?.message
   } else if (error?.name === "CastError") {
     const simplifiedError = handleCastError(error)
     statusCode = simplifiedError.statusCode
@@ -46,7 +46,8 @@ const globalErrorHandler = (error, req, res, next) => {
       : []
   }
   // response
-  res.status(statusCode).json({
+
+  return res.status(statusCode).json({
     success: false,
     message,
     errorMessages,

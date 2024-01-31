@@ -1,21 +1,21 @@
 const express = require("express")
-const BrandController = require("./brand.controller")
+const SubCategoryController = require("./subCategory.controller")
 
 const routes = express.Router()
 
 routes.post("/", async (req, res, next) => {
   try {
     const data = req.body
-    const result = await BrandController.createBrand(data)
+    const result = await SubCategoryController.create(data)
     return res.status(result ? 200 : 500).json({
       success: result,
-      message: result ? `Brand created successfully` : `Failed to create Brand`,
+      message: result ? `Created successfully` : `Failed to create`,
     })
   } catch (error) {
     next(error)
   }
 })
 
-const BrandRoutes = routes
+const SubCategoryRoutes = routes
 
-module.exports = BrandRoutes
+module.exports = SubCategoryRoutes
