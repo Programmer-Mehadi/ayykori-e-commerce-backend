@@ -29,6 +29,9 @@ async function placeOrder(data) {
               },
               {
                 $inc: { quantity: -product.quantity },
+              },
+              {
+                session: session,
               }
             )
 
@@ -38,7 +41,8 @@ async function placeOrder(data) {
                 success: false,
                 error: "Failed to update quantity",
               }
-              return undefined
+              await session.abortTransaction()
+              throw new Error("Failed to update quantity")
             } else {
               return productResult
             }
@@ -52,35 +56,51 @@ async function placeOrder(data) {
           }
         })
       )
-      // TODO: create a payment in payment collection
 
-      const paymentResult = await Payment.create({
-        id: `p-${Math.ceil(Math.random() * 1000)}`,
-        orderId: orderResult[0]._id,
-        total: orderResult[0].total,
-        paymentMethodId: "65ba1a71bccae12eb69ffa12",
-        buyerId: orderResult[0].buyerId,
-        transactionId: Math.floor(Math.random() * 1000).toString(),
-      })
-      if (paymentResult) {
-        result = {
-          success: true,
-          error: "",
-        }
-      }
-      // If both order creation and quantity updates were successful, commit the transaction
-      if (paymentResult) {
-        await session.commitTransaction()
-        result = {
-          success: true,
-          error: "",
-        }
-      } else {
-        // If payment creation was not successful, rollback the transaction
-        await session.abortTransaction()
+      // TODO: create a payment in payment collection
+      const findUndefinedPayment = productModifyResult.find(
+        (item) => item == undefined
+      )
+      if (findUndefinedPayment) {
+        console.log(findUndefinedPayment)
         result = {
           success: false,
           error: "Failed to create payment",
+        }
+      } else {
+        const paymentResult = await Payment.create(
+          [
+            {
+              id: `p-${Math.ceil(Math.random() * 1000)
+                .toString()
+                .slice(0, 5)}`,
+              orderId: orderResult[0]._id,
+              total: orderResult[0].total,
+              paymentMethodId: new mongoose.Types.ObjectId(
+                "65ba1a71bccae12eb69ffa12"
+              ),
+              buyerId: orderResult[0].buyerId,
+              transactionId: Math.random().toString().slice(2, 10),
+            },
+          ],
+          {
+            session: session,
+          }
+        )
+        // If both order creation and quantity updates were successful, commit the transaction
+        if (paymentResult[0]) {
+          await session.commitTransaction()
+          result = {
+            success: true,
+            error: "",
+          }
+        } else {
+          // If payment creation was not successful, rollback the transaction
+          await session.abortTransaction()
+          result = {
+            success: false,
+            error: "Failed to create payment",
+          }
         }
       }
     }
