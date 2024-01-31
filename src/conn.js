@@ -5,6 +5,7 @@ const routes = require("./app/routes/routes.js")
 const globalErrorHandler = require("./app/middlewares/globalErrorHandler.js")
 const conn = express()
 const rateLimit = require("express-rate-limit")
+const MyLogger = require("./app/logger/MyLogger.js")
 
 // middlewares
 conn.use(cors())
@@ -80,6 +81,7 @@ conn.get("/", (req, res) => {
 })
 
 conn.use("*", (req, res) => {
+  MyLogger.error(`🙄 Api ${req.originalUrl} not found 🚫`)
   res.status(404).send({
     success: false,
     message: `🙄 Api ${req.originalUrl} not found 🚫`,
@@ -87,6 +89,7 @@ conn.use("*", (req, res) => {
 })
 
 conn.use((error, req, res) => {
+  MyLogger.error(error + new Date().toString())
   return res.status(500).json({
     success: false,
     error: {

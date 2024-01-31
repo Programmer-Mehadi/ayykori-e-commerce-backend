@@ -2,6 +2,7 @@ const configEnv = require("../../config/configEnv")
 const ApiError = require("../../errors/ApiError")
 const handleCastError = require("../../errors/handleCastError")
 const handleValidationError = require("../../errors/handleValidationError")
+const MyLogger = require("../logger/MyLogger")
 
 const globalErrorHandler = (error, req, res, next) => {
   let statusCode = 500
@@ -46,14 +47,13 @@ const globalErrorHandler = (error, req, res, next) => {
       : []
   }
   // response
-
+  MyLogger.error(error + new Date().toString())
   return res.status(statusCode).json({
     success: false,
     message,
     errorMessages,
     stack: configEnv.env !== "production" ? error?.stack : undefined,
   })
-  next()
 }
 
 module.exports = globalErrorHandler
