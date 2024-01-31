@@ -10,12 +10,12 @@ async function placeOrder(data) {
 
   let result = {
     success: false,
-    error: "Could not place order",
+    error: "",
   }
 
   try {
     // TODO: Create a new order object in the order collection
-    const orderResult = await Order.create(data)
+    const orderResult = await Order.create([data], { session })
 
     // If order creation was successful, proceed with quantity updates
     if (orderResult) {
@@ -29,7 +29,8 @@ async function placeOrder(data) {
               },
               {
                 $inc: { quantity: -product.quantity },
-              }
+              },
+              { session }
             )
 
             if (productResult?.modifiedCount === 0) {
