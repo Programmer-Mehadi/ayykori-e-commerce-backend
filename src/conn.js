@@ -71,7 +71,7 @@ const individualLimiter = rateLimit({
 // set the routes
 conn.use("/api/v1", routes)
 
-// ? global error handler
+// set global error handler
 conn.use(globalErrorHandler)
 
 // set the server root api

@@ -43,15 +43,40 @@ async function placeOrder(data) {
             return productResult
           } catch (error) {
             // Handle the error here, log it, or perform any necessary actions
-            console.error(
-              `Error updating quantity for product with ID ${product.productId}: ${error.message}`
-            )
             // Re-throw the error to propagate it
             throw error
           }
         })
       )
+      // TODO: create a payment in payment collection
+      try {
+        const paymentResult = await Payment.create(
+          {
+            id: `p-${math.ceil(Math.random() * 1000)}`,
+            orderId: orderResult[0]._id,
+            total: orderResult[0].total,
+            buyerId: orderResult[0].buyerId,
+          },
+          {
+            session,
+          }
+        )
 
+        if (paymentResult.length > 0) {
+          result = {
+            success: true,
+            error: "",
+          }
+        } else {
+          result = {
+            success: false,
+            error: "Failed to create payment",
+          }
+          throw new Error("Failed to create payment")
+        }
+      } catch (err) {
+        throw err
+      }
       // If both order creation and quantity updates were successful, commit the transaction
       await session.commitTransaction()
       result = {

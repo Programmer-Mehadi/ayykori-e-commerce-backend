@@ -3,7 +3,7 @@ const OrderController = require("./order.controller")
 
 const routes = express.Router()
 
-routes.post("/place-order", async (req, res, next) => {
+routes.get("/place-order", async (req, res, next) => {
   try {
     const orderData = req.body
     const order = await OrderController.placeOrder(orderData)
